@@ -112,11 +112,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @UiThread
     public void setSortingAdapter(int which) {
         currentSort = which;
-        movies.beginBatchedUpdates();
+        MovieListItem[] newmovies = new MovieListItem[movies.size()];
         for(int i = 0; i < movies.size(); i++) {
-            movies.recalculatePositionOfItemAt(i);
+            newmovies[i] = movies.get(i);
         }
-        movies.endBatchedUpdates();
+        movies.clear();
+        movies.addAll(newmovies, false);
         Log.i("CHANGE", Integer.toString(which));
     }
 }

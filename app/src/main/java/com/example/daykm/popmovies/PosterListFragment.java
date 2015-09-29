@@ -52,6 +52,11 @@ public class PosterListFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         isSinglePane = getArguments().getByte(PANE) == 0x0;
@@ -166,7 +171,11 @@ public class PosterListFragment extends Fragment {
             // do something
             Log.i("IT WORKED", movie.getId().toString());
             if(isSinglePane) {
-                getFragmentManager().beginTransaction().replace(R.id.posterContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl())).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction()
+                        .add(R.id.posterContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()))
+                        .addToBackStack(null)
+                        .hide(PosterListFragment.this) // keep instance
+                        .commit();
             } else {
                 // TODO tablet layout
             }
