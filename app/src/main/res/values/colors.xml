@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="material_primary">#f08c35</color>
-    <color name="material_accent">#FF5252</color>
+    <color name="material_primary">#F44336</color>
+    <color name="material_accent">#FF6E40</color>
 </resources>

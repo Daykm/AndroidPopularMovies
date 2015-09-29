@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="50dp"
-            android:textSize="25sp"
+            android:textSize="40sp"
             android:background="@color/material_accent"
             android:textColor="@android:color/primary_text_dark"
             tools:text="Jurassic World" />
@@ -76,9 +76,13 @@
             android:text="@string/favorite" />
 
         <TextView
+            android:visibility="gone"
+            tools:text="3.88783987234"
             android:id="@+id/popularity"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/moviePoster"
+            android:layout_below="@+id/movieFavoriteButton" />
 
         <TextView
             android:id="@+id/movieOverview"
