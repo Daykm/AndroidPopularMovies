@@ -1,0 +1,92 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="com.example.daykm.popmovies.MovieDetailsFragment">
+
+        <TextView
+            android:id="@+id/movieTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="50dp"
+            android:textSize="25sp"
+            android:background="@color/material_accent"
+            android:textColor="@android:color/primary_text_dark"
+            tools:text="Jurassic World" />
+
+        <ImageView
+            android:id="@+id/moviePoster"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/movieTitle"
+            android:layout_marginRight="10dp"
+            android:adjustViewBounds="true"
+            android:padding="10dp"
+            tools:src="@drawable/test" />
+
+        <TextView
+            android:id="@+id/movieReleaseYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/moviePoster"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@+id/moviePoster"
+            android:textSize="25sp"
+            tools:text="2015" />
+
+        <TextView
+            android:id="@+id/movieRuntime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/movieReleaseYear"
+            android:layout_toRightOf="@+id/moviePoster"
+            android:textSize="20sp"
+            android:textStyle="italic"
+            tools:text="120" />
+
+        <TextView
+            android:id="@+id/movieRuntimeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/movieRuntime"
+            android:layout_toRightOf="@+id/movieRuntime"
+            android:text="@string/label_runtime"
+            android:textSize="20sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/movieRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/movieRuntime"
+            android:layout_toRightOf="@+id/moviePoster"
+            tools:text="8.1/10" />
+
+        <Button
+            android:id="@+id/movieFavoriteButton"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/movieRating"
+            android:layout_toRightOf="@+id/moviePoster"
+            android:text="@string/favorite" />
+
+        <TextView
+            android:id="@+id/popularity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/movieOverview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/moviePoster"
+            android:padding="15dp"
+            tools:text="@string/testOverview" />
+
+    </RelativeLayout>
+</ScrollView>
