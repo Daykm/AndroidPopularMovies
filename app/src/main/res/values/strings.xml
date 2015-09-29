@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Pop Movies</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="label_runtime">min</string>
+    <string name="favorite">Mark as Favorite</string>
+    <string name="testOverview">Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.</string>
+    <string name="sort_posters">Sort Posters</string>
+    <string name="sort_movies">Sort Movies</string>
+    <string name="sort_popularity">Sort by popularity</string>
+    <string name="sort_rating">Sort by rating</string>
+
+    <array name="sort_options">
+        <item name="popularity">@string/sort_popularity</item>
+        <item name="rating">@string/sort_rating</item>
+    </array>
+</resources>
