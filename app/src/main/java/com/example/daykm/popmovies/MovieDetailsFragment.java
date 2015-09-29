@@ -36,6 +36,7 @@ public class MovieDetailsFragment extends Fragment {
     @Bind(R.id.movieRating) TextView rating;
     @Bind(R.id.movieFavoriteButton) Button favorite;
     @Bind(R.id.movieOverview) TextView overview;
+    @Bind(R.id.popularity) TextView popularity;
 
     public static MovieDetailsFragment newInstance(Integer id, String posterURL) {
         MovieDetailsFragment fragment = new MovieDetailsFragment();
@@ -88,7 +89,7 @@ public class MovieDetailsFragment extends Fragment {
         runtime.setText(result.getRuntime().toString());
         rating.setText(new DecimalFormat("#.#").format(result.getVoteAverage()) + "/" + "10.0");
         overview.setText(result.getOverview());
-
+        popularity.setText(Float.toString(result.getPopularity()));
         favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

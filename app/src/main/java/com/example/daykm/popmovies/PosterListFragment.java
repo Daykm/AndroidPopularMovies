@@ -99,11 +99,11 @@ public class PosterListFragment extends Fragment {
                         switch(which) {
                             case 0:
                                 // popularity
-                                adapter.setSortingAdapter(new RecyclerViewAdapter.PosterListByPopularity(adapter));
+                                adapter.setSortingAdapter(RecyclerViewAdapter.SORT_BY_POPULARITY);
                                 break;
                             case 1:
                                 // rating
-                                adapter.setSortingAdapter(new RecyclerViewAdapter.PosterListByRating(adapter));
+                                adapter.setSortingAdapter(RecyclerViewAdapter.SORT_BY_RATING);
                                 break;
 
                         }

@@ -1,9 +1,11 @@
 package com.example.daykm.popmovies;
 
 import android.content.Context;
+import android.support.annotation.UiThread;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.util.SortedListAdapterCallback;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,45 +14,42 @@ import android.widget.ImageView;
 import com.example.daykm.popmovies.beans.MovieListItem;
 import com.squareup.picasso.Picasso;
 
+import java.util.Comparator;
+
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.PosterViewHolder> {
 
     SortedList<MovieListItem> movies;
     Context context;
     PosterListFragment.PosterListener listener;
-    SortedListAdapterCallback<MovieListItem> adapterCallback;
 
-    public static final class PosterListByPopularity extends SortedListAdapterCallback<MovieListItem> {
+    public static final int SORT_BY_POPULARITY = 1;
+    public static final int SORT_BY_RATING = 2;
+    private int currentSort = 1;
 
-        public PosterListByPopularity(RecyclerView.Adapter adapter) {
+    public final Comparator<MovieListItem> MOVIE_COMPARATOR = new Comparator<MovieListItem>() {
+        @Override
+        public int compare(MovieListItem movie1, MovieListItem movie2) {
+            switch(currentSort) {
+                case SORT_BY_POPULARITY:
+                    Log.i("RecyclerViewAdapter", "Sort by popularity");
+                    return -1 * Float.compare(movie1.getPopularity(), movie2.getPopularity());
+                case SORT_BY_RATING:
+                    Log.i("RecyclerViewAdapter", "Sort by rating");
+                    return -1 * Float.compare(movie1.getRating(), movie2.getRating());
+            }
+            return 0;
+        }
+    };
+
+    public final class PosterListCallback extends SortedListAdapterCallback<MovieListItem> {
+
+        public PosterListCallback(RecyclerView.Adapter adapter) {
             super(adapter);
         }
 
         @Override
         public int compare(MovieListItem movie1, MovieListItem movie2) {
-            return -1 * Float.compare(movie1.getPopularity(), movie2.getPopularity());
-        }
-
-        @Override
-        public boolean areContentsTheSame(MovieListItem oldItem, MovieListItem newItem) {
-            return false;
-        }
-
-        @Override
-        public boolean areItemsTheSame(MovieListItem item1, MovieListItem item2) {
-            return false;
-        }
-    }
-
-    public static final class PosterListByRating extends SortedListAdapterCallback<MovieListItem> {
-
-
-        public PosterListByRating(RecyclerView.Adapter adapter) {
-            super(adapter);
-        }
-
-        @Override
-        public int compare(MovieListItem movie1, MovieListItem movie2) {
-            return -1 * Float.compare(movie1.getRating(), movie2.getRating());
+            return MOVIE_COMPARATOR.compare(movie1, movie2);
         }
 
         @Override
@@ -67,8 +66,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public RecyclerViewAdapter(Context context, PosterListFragment.PosterListener listener) {
         this.context = context;
         this.listener = listener;
-        adapterCallback = new PosterListByRating(this);
-        movies = new SortedList<>(MovieListItem.class, adapterCallback);
+        movies = new SortedList<>(MovieListItem.class, new PosterListCallback(this));
     }
 
     protected class PosterViewHolder extends RecyclerView.ViewHolder {
@@ -111,8 +109,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return movies.size();
     }
 
-    public void setSortingAdapter(SortedListAdapterCallback<MovieListItem> adapterCallback) {
-        this.adapterCallback = adapterCallback;
-        notifyDataSetChanged();
+    @UiThread
+    public void setSortingAdapter(int which) {
+        currentSort = which;
+        movies.beginBatchedUpdates();
+        for(int i = 0; i < movies.size(); i++) {
+            movies.recalculatePositionOfItemAt(i);
+        }
+        movies.endBatchedUpdates();
+        Log.i("CHANGE", Integer.toString(which));
     }
 }
