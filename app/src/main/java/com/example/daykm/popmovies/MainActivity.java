@@ -22,14 +22,16 @@ public class MainActivity extends AppCompatActivity {
             isSinglePane = true;
         }
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if(getSupportFragmentManager().findFragmentByTag(SERVICE) == null) {
-            ServiceFragment fragment = new ServiceFragment();
-            fragment.setRetainInstance(true);
-            ft.add(fragment, SERVICE);
+        if(savedInstanceState == null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            if(getSupportFragmentManager().findFragmentByTag(SERVICE) == null) {
+                ServiceFragment fragment = new ServiceFragment();
+                fragment.setRetainInstance(true);
+                ft.add(fragment, SERVICE);
+            }
+            ft.add(R.id.posterContainer, PosterListFragment.newInstance(isSinglePane));
+            ft.commit();
         }
-        ft.add(R.id.posterContainer, PosterListFragment.newInstance(isSinglePane));
-        ft.commit();
     }
 
     @Override

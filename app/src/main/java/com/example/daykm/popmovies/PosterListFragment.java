@@ -37,7 +37,10 @@ public class PosterListFragment extends Fragment {
     private String posterSize = "";
 
     private static final String PANE = "P";
+    private static final String SORT = "S";
     boolean isSinglePane = false;
+
+    private int adapterSort = 1;
 
     public PosterListFragment() {
         // Required empty public constructor
@@ -45,6 +48,7 @@ public class PosterListFragment extends Fragment {
 
     public static PosterListFragment newInstance(boolean isSinglePane) {
         PosterListFragment fragment = new PosterListFragment();
+        fragment.setRetainInstance(true);
         Bundle args = new Bundle();
         args.putByte(PANE, (byte) (isSinglePane ? 0x0 : 0x1));
         fragment.setArguments(args);
@@ -54,7 +58,10 @@ public class PosterListFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(SORT, adapterSort);
     }
+
+
 
     @Override
     public void onAttach(Context context) {
@@ -66,6 +73,14 @@ public class PosterListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        adapter = new RecyclerViewAdapter(getContext(), new PosterListenerCallback());
+        movies = adapter.getList();
+        if(savedInstanceState != null) {
+            int sort = savedInstanceState.getInt(SORT);
+            adapterSort = sort;
+            adapter.setSortingAdapter(sort);
+        }
     }
 
     @Override
@@ -75,10 +90,6 @@ public class PosterListFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_poster_list, container, false);
 
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.posterList);
-
-
-        adapter = new RecyclerViewAdapter(getContext(), new PosterListenerCallback());
-        movies = adapter.getList();
         recyclerView.setAdapter(adapter);
         GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(manager);
@@ -104,11 +115,13 @@ public class PosterListFragment extends Fragment {
                         switch(which) {
                             case 0:
                                 // popularity
-                                adapter.setSortingAdapter(RecyclerViewAdapter.SORT_BY_POPULARITY);
+                                adapterSort = RecyclerViewAdapter.SORT_BY_POPULARITY;
+                                adapter.setSortingAdapter(adapterSort);
                                 break;
                             case 1:
                                 // rating
-                                adapter.setSortingAdapter(RecyclerViewAdapter.SORT_BY_RATING);
+                                adapterSort = RecyclerViewAdapter.SORT_BY_RATING;
+                                adapter.setSortingAdapter(adapterSort);
                                 break;
 
                         }
@@ -149,6 +162,7 @@ public class PosterListFragment extends Fragment {
 
         @Override
         public void onResponse(Response<MovieDiscoveryPage> response) {
+            //movies.clear();
             for (MovieDiscovery movie : response.body().getResults()) {
                 movies.add(new MovieListItem(movie.getId(), baseUrl + posterSize +  movie.getPosterPath(), movie.getPopularity(), movie.getVoteAverage()));
             }
@@ -168,8 +182,6 @@ public class PosterListFragment extends Fragment {
 
         @Override
         public void onPosterClicked(MovieListItem movie) {
-            // do something
-            Log.i("IT WORKED", movie.getId().toString());
             if(isSinglePane) {
                 getFragmentManager().beginTransaction()
                         .add(R.id.posterContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()))
@@ -178,6 +190,9 @@ public class PosterListFragment extends Fragment {
                         .commit();
             } else {
                 // TODO tablet layout
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.detailsContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()))
+                        .commit();
             }
         }
     }

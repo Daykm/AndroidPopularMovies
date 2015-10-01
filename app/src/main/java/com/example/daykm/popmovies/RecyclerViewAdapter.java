@@ -54,12 +54,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         @Override
         public boolean areContentsTheSame(MovieListItem movie1, MovieListItem movie2) {
-            return false;
+            return movie1.getId().equals(movie2.getId());
         }
 
         @Override
         public boolean areItemsTheSame(MovieListItem movie1, MovieListItem movie2) {
-            return false;
+            return movie1.getId().equals(movie2.getId());
         }
     }
 
