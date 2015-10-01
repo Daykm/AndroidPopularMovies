@@ -21,6 +21,9 @@ import retrofit.Callback;
 import retrofit.Response;
 
 public class MovieDetailsFragment extends Fragment {
+
+    public static final String TAG = MovieDetailsFragment.class.getSimpleName();
+
     private static final String IDENTIFICATION = "ID";
     private static final String POSTER_URL = "P";
 

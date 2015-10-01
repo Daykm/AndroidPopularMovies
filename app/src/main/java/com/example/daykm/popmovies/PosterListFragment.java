@@ -1,7 +1,5 @@
 package com.example.daykm.popmovies;
 
-
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.util.SortedList;
@@ -26,6 +24,10 @@ import retrofit.Response;
 
 public class PosterListFragment extends Fragment {
 
+    public static final String TAG = PosterListFragment.class.getSimpleName();
+
+    public static final String FRAGMENT_TRANSACTION_TAG = "t";
+
     RecyclerViewAdapter adapter;
 
     MovieDBService service;
@@ -46,12 +48,9 @@ public class PosterListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static PosterListFragment newInstance(boolean isSinglePane) {
+    public static PosterListFragment newInstance() {
         PosterListFragment fragment = new PosterListFragment();
         fragment.setRetainInstance(true);
-        Bundle args = new Bundle();
-        args.putByte(PANE, (byte) (isSinglePane ? 0x0 : 0x1));
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -61,18 +60,11 @@ public class PosterListFragment extends Fragment {
         outState.putInt(SORT, adapterSort);
     }
 
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        isSinglePane = getArguments().getByte(PANE) == 0x0;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
 
         adapter = new RecyclerViewAdapter(getContext(), new PosterListenerCallback());
         movies = adapter.getList();
@@ -86,6 +78,8 @@ public class PosterListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        isSinglePane = getActivity().findViewById(R.id.detailsContainer) == null;
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_poster_list, container, false);
 
@@ -184,17 +178,16 @@ public class PosterListFragment extends Fragment {
         public void onPosterClicked(MovieListItem movie) {
             if(isSinglePane) {
                 getFragmentManager().beginTransaction()
-                        .add(R.id.posterContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()))
-                        .addToBackStack(null)
+                        .add(R.id.posterContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()), MovieDetailsFragment.TAG)
+                        .addToBackStack(FRAGMENT_TRANSACTION_TAG)
                         .hide(PosterListFragment.this) // keep instance
                         .commit();
             } else {
                 // TODO tablet layout
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.detailsContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()))
+                        .replace(R.id.detailsContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()), MovieDetailsFragment.TAG)
                         .commit();
             }
         }
     }
-
 }
