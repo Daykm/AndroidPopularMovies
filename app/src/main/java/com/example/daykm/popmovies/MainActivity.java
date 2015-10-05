@@ -1,14 +1,15 @@
 package com.example.daykm.popmovies;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String RESULT_KEY = "A";
 
     public static final String SERVICE = "B";
 
@@ -16,20 +17,49 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        boolean isSinglePane = false;
 
-        if(findViewById(R.id.detailsContainer) == null) {
-            isSinglePane = true;
+        if(savedInstanceState == null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            if(getSupportFragmentManager().findFragmentByTag(SERVICE) == null) {
+                ServiceFragment fragment = new ServiceFragment();
+                fragment.setRetainInstance(true);
+                ft.add(fragment, SERVICE);
+            }
+            ft.add(R.id.posterContainer, PosterListFragment.newInstance(), PosterListFragment.TAG);
+            ft.commit();
         }
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if(getSupportFragmentManager().findFragmentByTag(SERVICE) == null) {
-            ServiceFragment fragment = new ServiceFragment();
-            fragment.setRetainInstance(true);
-            ft.add(fragment, SERVICE);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Handle rotation changes
+
+        boolean isSinglePane = findViewById(R.id.detailsContainer) == null;
+
+        FragmentManager fm = getSupportFragmentManager();
+
+        Fragment fragment = fm.findFragmentByTag(MovieDetailsFragment.TAG);
+        if(fragment != null) {
+            if(isSinglePane) {
+                fm.beginTransaction().remove(fragment).commit();
+                fm.executePendingTransactions();
+                fm.beginTransaction()
+                        .add(R.id.posterContainer, fragment, MovieDetailsFragment.TAG)
+                        .hide(fm.findFragmentByTag(PosterListFragment.TAG))
+                        .addToBackStack(PosterListFragment.FRAGMENT_TRANSACTION_TAG)
+                        .commit();
+            } else {
+                fm.popBackStack(PosterListFragment.FRAGMENT_TRANSACTION_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fm.executePendingTransactions();
+                fm.beginTransaction()
+                        .add(R.id.detailsContainer, fragment, MovieDetailsFragment.TAG)
+                        .commit();
+            }
         }
-        ft.add(R.id.posterContainer, PosterListFragment.newInstance(isSinglePane));
-        ft.commit();
     }
 
     @Override

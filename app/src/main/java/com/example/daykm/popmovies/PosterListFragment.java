@@ -1,7 +1,5 @@
 package com.example.daykm.popmovies;
 
-
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.util.SortedList;
@@ -26,6 +24,10 @@ import retrofit.Response;
 
 public class PosterListFragment extends Fragment {
 
+    public static final String TAG = PosterListFragment.class.getSimpleName();
+
+    public static final String FRAGMENT_TRANSACTION_TAG = "t";
+
     RecyclerViewAdapter adapter;
 
     MovieDBService service;
@@ -37,48 +39,51 @@ public class PosterListFragment extends Fragment {
     private String posterSize = "";
 
     private static final String PANE = "P";
+    private static final String SORT = "S";
     boolean isSinglePane = false;
+
+    private int adapterSort = 1;
 
     public PosterListFragment() {
         // Required empty public constructor
     }
 
-    public static PosterListFragment newInstance(boolean isSinglePane) {
+    public static PosterListFragment newInstance() {
         PosterListFragment fragment = new PosterListFragment();
-        Bundle args = new Bundle();
-        args.putByte(PANE, (byte) (isSinglePane ? 0x0 : 0x1));
-        fragment.setArguments(args);
+        fragment.setRetainInstance(true);
         return fragment;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        isSinglePane = getArguments().getByte(PANE) == 0x0;
+        outState.putInt(SORT, adapterSort);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+
+        adapter = new RecyclerViewAdapter(getContext(), new PosterListenerCallback());
+        movies = adapter.getList();
+        if(savedInstanceState != null) {
+            int sort = savedInstanceState.getInt(SORT);
+            adapterSort = sort;
+            adapter.setSortingAdapter(sort);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        isSinglePane = getActivity().findViewById(R.id.detailsContainer) == null;
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_poster_list, container, false);
 
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.posterList);
-
-
-        adapter = new RecyclerViewAdapter(getContext(), new PosterListenerCallback());
-        movies = adapter.getList();
         recyclerView.setAdapter(adapter);
         GridLayoutManager manager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(manager);
@@ -104,11 +109,13 @@ public class PosterListFragment extends Fragment {
                         switch(which) {
                             case 0:
                                 // popularity
-                                adapter.setSortingAdapter(RecyclerViewAdapter.SORT_BY_POPULARITY);
+                                adapterSort = RecyclerViewAdapter.SORT_BY_POPULARITY;
+                                adapter.setSortingAdapter(adapterSort);
                                 break;
                             case 1:
                                 // rating
-                                adapter.setSortingAdapter(RecyclerViewAdapter.SORT_BY_RATING);
+                                adapterSort = RecyclerViewAdapter.SORT_BY_RATING;
+                                adapter.setSortingAdapter(adapterSort);
                                 break;
 
                         }
@@ -149,6 +156,7 @@ public class PosterListFragment extends Fragment {
 
         @Override
         public void onResponse(Response<MovieDiscoveryPage> response) {
+            //movies.clear();
             for (MovieDiscovery movie : response.body().getResults()) {
                 movies.add(new MovieListItem(movie.getId(), baseUrl + posterSize +  movie.getPosterPath(), movie.getPopularity(), movie.getVoteAverage()));
             }
@@ -168,18 +176,19 @@ public class PosterListFragment extends Fragment {
 
         @Override
         public void onPosterClicked(MovieListItem movie) {
-            // do something
-            Log.i("IT WORKED", movie.getId().toString());
             if(isSinglePane) {
+                Fragment frag = getFragmentManager().findFragmentByTag(TAG);
                 getFragmentManager().beginTransaction()
-                        .add(R.id.posterContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()))
-                        .addToBackStack(null)
-                        .hide(PosterListFragment.this) // keep instance
+                        .add(R.id.posterContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()), MovieDetailsFragment.TAG)
+                        .addToBackStack(FRAGMENT_TRANSACTION_TAG)
+                        .hide(frag) // keep instance
                         .commit();
             } else {
                 // TODO tablet layout
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.detailsContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()), MovieDetailsFragment.TAG)
+                        .commit();
             }
         }
     }
-
 }

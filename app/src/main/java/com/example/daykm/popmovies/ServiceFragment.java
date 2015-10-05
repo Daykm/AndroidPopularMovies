@@ -13,5 +13,4 @@ public class ServiceFragment extends Fragment {
         service = new MovieDBService(getResources().getString(R.string.movieDBKey));
     }
 
-
 }

@@ -19,8 +19,12 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.http.HTTP;
 
 public class MovieDetailsFragment extends Fragment {
+
+    public static final String TAG = MovieDetailsFragment.class.getSimpleName();
+
     private static final String IDENTIFICATION = "ID";
     private static final String POSTER_URL = "P";
 
@@ -72,7 +76,11 @@ public class MovieDetailsFragment extends Fragment {
     private class MovieDetailsCallback implements Callback<Movie> {
         @Override
         public void onResponse(Response<Movie> response) {
-            inflateFromMovie(response.body());
+            if(response.code() == 200) {
+                inflateFromMovie(response.body());
+            } else {
+                Log.e(TAG, "Network error");
+            }
         }
 
         @Override

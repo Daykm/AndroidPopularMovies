@@ -26,6 +26,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public static final int SORT_BY_RATING = 2;
     private int currentSort = 1;
 
+
     public final Comparator<MovieListItem> MOVIE_COMPARATOR = new Comparator<MovieListItem>() {
         @Override
         public int compare(MovieListItem movie1, MovieListItem movie2) {
@@ -54,12 +55,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         @Override
         public boolean areContentsTheSame(MovieListItem movie1, MovieListItem movie2) {
-            return false;
+            return movie1.getId().equals(movie2.getId());
         }
 
         @Override
         public boolean areItemsTheSame(MovieListItem movie1, MovieListItem movie2) {
-            return false;
+            return movie1.getId().equals(movie2.getId());
         }
     }
 
