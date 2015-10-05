@@ -17,6 +17,7 @@ import com.example.daykm.popmovies.beans.MovieListItem;
 import com.example.daykm.popmovies.domain.Configuration;
 import com.example.daykm.popmovies.domain.MovieDiscovery;
 import com.example.daykm.popmovies.domain.MovieDiscoveryPage;
+import com.example.daykm.popmovies.domain.SortByCriteria;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -42,7 +43,7 @@ public class PosterListFragment extends Fragment {
     private static final String SORT = "S";
     boolean isSinglePane = false;
 
-    private int adapterSort = 1;
+    private String sortingCriteria = SortByCriteria.POPULARITY_DESC;
 
     public PosterListFragment() {
         // Required empty public constructor
@@ -57,7 +58,7 @@ public class PosterListFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(SORT, adapterSort);
+        outState.putString(SORT, sortingCriteria);
     }
 
     @Override
@@ -69,9 +70,7 @@ public class PosterListFragment extends Fragment {
         adapter = new RecyclerViewAdapter(getContext(), new PosterListenerCallback());
         movies = adapter.getList();
         if(savedInstanceState != null) {
-            int sort = savedInstanceState.getInt(SORT);
-            adapterSort = sort;
-            adapter.setSortingAdapter(sort);
+            sortingCriteria = savedInstanceState.getString(SORT);
         }
     }
 
@@ -108,17 +107,19 @@ public class PosterListFragment extends Fragment {
                     public void onSortChange(int which) {
                         switch(which) {
                             case 0:
-                                // popularity
-                                adapterSort = RecyclerViewAdapter.SORT_BY_POPULARITY;
-                                adapter.setSortingAdapter(adapterSort);
+                                sortingCriteria = SortByCriteria.POPULARITY_DESC;
                                 break;
                             case 1:
-                                // rating
-                                adapterSort = RecyclerViewAdapter.SORT_BY_RATING;
-                                adapter.setSortingAdapter(adapterSort);
+                                sortingCriteria = SortByCriteria.POPULARITY_ASC;
                                 break;
-
+                            case 2:
+                                sortingCriteria = SortByCriteria.VOTE_AVERAGE_DESC;
+                                break;
+                            case 3:
+                                sortingCriteria = SortByCriteria.VOTE_AVERAGE_ASC;
+                                break;
                         }
+                        service.getPopularMovies(new PopularMoviesCallback(), sortingCriteria);
                     }
                 }).show(getFragmentManager(), "Dialog");
                 return true;
@@ -143,7 +144,7 @@ public class PosterListFragment extends Fragment {
         public void onResponse(Response<Configuration> response) {
             baseUrl = response.body().getImages().getBaseUrl();
             posterSize = response.body().getImages().getPosterSizes().get(3);
-            service.getPopularMovies(new PopularMoviesCallback());
+            service.getPopularMovies(new PopularMoviesCallback(), sortingCriteria);
         }
 
         @Override
@@ -156,10 +157,12 @@ public class PosterListFragment extends Fragment {
 
         @Override
         public void onResponse(Response<MovieDiscoveryPage> response) {
-            //movies.clear();
+            movies.beginBatchedUpdates();
+            movies.clear();
             for (MovieDiscovery movie : response.body().getResults()) {
                 movies.add(new MovieListItem(movie.getId(), baseUrl + posterSize +  movie.getPosterPath(), movie.getPopularity(), movie.getVoteAverage()));
             }
+            movies.endBatchedUpdates();
         }
 
         @Override

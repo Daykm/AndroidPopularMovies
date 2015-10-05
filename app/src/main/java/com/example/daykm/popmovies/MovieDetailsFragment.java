@@ -92,7 +92,17 @@ public class MovieDetailsFragment extends Fragment {
     public void inflateFromMovie(Movie result) {
         title.setText(result.getTitle());
 
-        Picasso.with(getContext()).load(posterUrl).into(poster);
+        Picasso.with(getContext()).load(posterUrl).into(poster, new com.squareup.picasso.Callback() {
+            @Override
+            public void onSuccess() {
+                // success
+            }
+
+            @Override
+            public void onError() {
+                poster.setImageResource(R.drawable.no_poster);
+            }
+        });
         year.setText(result.getReleaseDate().substring(0, 4));
         runtime.setText(result.getRuntime().toString());
         rating.setText(new DecimalFormat("#.#").format(result.getVoteAverage()) + "/" + "10.0");

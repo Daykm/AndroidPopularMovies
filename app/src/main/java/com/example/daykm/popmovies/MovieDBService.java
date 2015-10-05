@@ -19,7 +19,7 @@ public class MovieDBService {
 
     private interface HttpService {
         @GET("discover/movie")
-        Call<MovieDiscoveryPage> getPopularMovies(@Query("api_key") String apiKey, @Query("page") Integer page);
+        Call<MovieDiscoveryPage> getPopularMovies(@Query("api_key") String apiKey, @Query("page") Integer page, @Query("sort_by") String sortingCriteria);
 
         @GET("movie/{id}")
         Call<Movie> getMovieById( @Path("id") Integer id, @Query("api_key") String apiKey);
@@ -46,8 +46,8 @@ public class MovieDBService {
     }
 
 
-    public void getPopularMovies(Callback<MovieDiscoveryPage> callback) {
-        mService.getPopularMovies(apiKey, 1).enqueue(callback);
+    public void getPopularMovies(Callback<MovieDiscoveryPage> callback, String sortingCriteria) {
+        mService.getPopularMovies(apiKey, 1, sortingCriteria).enqueue(callback);
     }
 
     public void getConfiguration(Callback<Configuration> callback) {

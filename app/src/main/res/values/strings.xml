@@ -11,11 +11,15 @@
     <string name="testOverview">Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.</string>
     <string name="sort_posters">Sort Posters</string>
     <string name="sort_movies">Sort Movies</string>
-    <string name="sort_popularity">Sort by popularity</string>
-    <string name="sort_rating">Sort by rating</string>
+    <string name="sort_popularity_asc">Sort by popularity ascending</string>
+    <string name="sort_popularity_desc">Sort by popularity descending</string>
+    <string name="sort_rating_asc">Sort by rating ascending</string>
+    <string name="sort_rating_desc">Sort by rating descending</string>
 
     <array name="sort_options">
-        <item name="popularity">@string/sort_popularity</item>
-        <item name="rating">@string/sort_rating</item>
+        <item name="popularity_desc">@string/sort_popularity_desc</item>
+        <item name="popularity_asc">@string/sort_popularity_asc</item>
+        <item name="rating_desc">@string/sort_rating_desc</item>
+        <item name="rating_asc">@string/sort_rating_asc</item>
     </array>
 </resources>

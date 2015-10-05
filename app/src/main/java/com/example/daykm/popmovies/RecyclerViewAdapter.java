@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.daykm.popmovies.beans.MovieListItem;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.Comparator;
@@ -22,26 +23,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     Context context;
     PosterListFragment.PosterListener listener;
 
-    public static final int SORT_BY_POPULARITY = 1;
-    public static final int SORT_BY_RATING = 2;
-    private int currentSort = 1;
-
-
-    public final Comparator<MovieListItem> MOVIE_COMPARATOR = new Comparator<MovieListItem>() {
-        @Override
-        public int compare(MovieListItem movie1, MovieListItem movie2) {
-            switch(currentSort) {
-                case SORT_BY_POPULARITY:
-                    Log.i("RecyclerViewAdapter", "Sort by popularity");
-                    return -1 * Float.compare(movie1.getPopularity(), movie2.getPopularity());
-                case SORT_BY_RATING:
-                    Log.i("RecyclerViewAdapter", "Sort by rating");
-                    return -1 * Float.compare(movie1.getRating(), movie2.getRating());
-            }
-            return 0;
-        }
-    };
-
     public final class PosterListCallback extends SortedListAdapterCallback<MovieListItem> {
 
         public PosterListCallback(RecyclerView.Adapter adapter) {
@@ -50,7 +31,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         @Override
         public int compare(MovieListItem movie1, MovieListItem movie2) {
-            return MOVIE_COMPARATOR.compare(movie1, movie2);
+            return 0;
         }
 
         @Override
@@ -99,26 +80,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(PosterViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final PosterViewHolder viewHolder, int i) {
         String url = movies.get(i).getPosterUrl();
-        Picasso.with(context).load(url).into(viewHolder.poster);
+        Picasso.with(context).load(url).into(viewHolder.poster, new Callback() {
+            @Override
+            public void onSuccess() {
+                // success
+            }
+
+            @Override
+            public void onError() {
+                viewHolder.poster.setImageResource(R.drawable.no_poster);
+            }
+        });
         viewHolder.index = i;
     }
 
     @Override
     public int getItemCount() {
         return movies.size();
-    }
-
-    @UiThread
-    public void setSortingAdapter(int which) {
-        currentSort = which;
-        MovieListItem[] newmovies = new MovieListItem[movies.size()];
-        for(int i = 0; i < movies.size(); i++) {
-            newmovies[i] = movies.get(i);
-        }
-        movies.clear();
-        movies.addAll(newmovies, false);
-        Log.i("CHANGE", Integer.toString(which));
     }
 }
