@@ -25,9 +25,16 @@ public class MainActivity extends AppCompatActivity {
                 fragment.setRetainInstance(true);
                 ft.add(fragment, SERVICE);
             }
-            ft.add(R.id.posterContainer, PosterListFragment.newInstance());
+            ft.add(R.id.posterContainer, PosterListFragment.newInstance(), PosterListFragment.TAG);
             ft.commit();
         }
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         // Handle rotation changes
 
@@ -37,31 +44,23 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment fragment = fm.findFragmentByTag(MovieDetailsFragment.TAG);
         if(fragment != null) {
-
-            //FragmentTransaction ft = fm.beginTransaction();
-
-            if(fm.popBackStackImmediate(PosterListFragment.FRAGMENT_TRANSACTION_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
-                Log.i("Backstack", "was popped");
-            } else {
+            if(isSinglePane) {
                 fm.beginTransaction().remove(fragment).commit();
                 fm.executePendingTransactions();
-            }
-
-            if(isSinglePane) {
                 fm.beginTransaction()
                         .add(R.id.posterContainer, fragment, MovieDetailsFragment.TAG)
                         .hide(fm.findFragmentByTag(PosterListFragment.TAG))
                         .addToBackStack(PosterListFragment.FRAGMENT_TRANSACTION_TAG)
                         .commit();
             } else {
+                fm.popBackStack(PosterListFragment.FRAGMENT_TRANSACTION_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fm.executePendingTransactions();
                 fm.beginTransaction()
                         .add(R.id.detailsContainer, fragment, MovieDetailsFragment.TAG)
                         .commit();
             }
         }
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

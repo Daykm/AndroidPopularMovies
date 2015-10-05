@@ -177,10 +177,11 @@ public class PosterListFragment extends Fragment {
         @Override
         public void onPosterClicked(MovieListItem movie) {
             if(isSinglePane) {
+                Fragment frag = getFragmentManager().findFragmentByTag(TAG);
                 getFragmentManager().beginTransaction()
                         .add(R.id.posterContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()), MovieDetailsFragment.TAG)
                         .addToBackStack(FRAGMENT_TRANSACTION_TAG)
-                        .hide(PosterListFragment.this) // keep instance
+                        .hide(frag) // keep instance
                         .commit();
             } else {
                 // TODO tablet layout
