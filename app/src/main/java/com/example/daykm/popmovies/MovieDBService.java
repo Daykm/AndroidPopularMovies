@@ -1,11 +1,10 @@
 package com.example.daykm.popmovies;
 
-import android.util.Log;
-
 import com.example.daykm.popmovies.domain.Configuration;
-import com.example.daykm.popmovies.domain.MovieImagesList;
 import com.example.daykm.popmovies.domain.Movie;
 import com.example.daykm.popmovies.domain.MovieDiscoveryPage;
+import com.example.daykm.popmovies.domain.ReviewPage;
+import com.example.daykm.popmovies.domain.VideoResults;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -22,12 +21,16 @@ public class MovieDBService {
         Call<MovieDiscoveryPage> getPopularMovies(@Query("api_key") String apiKey, @Query("page") Integer page, @Query("sort_by") String sortingCriteria);
 
         @GET("movie/{id}")
-        Call<Movie> getMovieById( @Path("id") Integer id, @Query("api_key") String apiKey);
+        Call<Movie> getMovieById(@Path("id") Integer id, @Query("api_key") String apiKey);
 
         @GET("configuration")
         Call<Configuration> getConfiguration(@Query("api_key") String apiKey);
 
+        @GET("movie/{id}/reviews")
+        Call<ReviewPage> getReviewsForMovieId(@Path("id") Integer id, @Query("api_key") String apiKey);
 
+        @GET("movie/{id}/videos")
+        Call<VideoResults> getVideosForMovieId(@Path("id") Integer id, @Query("api_key") String apiKey);
     }
 
     private HttpService mService;
@@ -56,6 +59,14 @@ public class MovieDBService {
 
     public void getMovieDetails(Integer id, Callback<Movie> callback) {
         mService.getMovieById(id, apiKey).enqueue(callback);
+    }
+
+    public void getReviewsForMovie(Integer id, Callback<ReviewPage> callback) {
+        mService.getReviewsForMovieId(id, apiKey).enqueue(callback);
+    }
+
+    public void getVideosForMovie(Integer id, Callback<VideoResults> callback) {
+        mService.getVideosForMovieId(id, apiKey).enqueue(callback);
     }
 
 }

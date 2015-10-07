@@ -187,7 +187,6 @@ public class PosterListFragment extends Fragment {
                         .hide(frag) // keep instance
                         .commit();
             } else {
-                // TODO tablet layout
                 getFragmentManager().beginTransaction()
                         .replace(R.id.detailsContainer, MovieDetailsFragment.newInstance(movie.getId(), movie.getPosterUrl()), MovieDetailsFragment.TAG)
                         .commit();

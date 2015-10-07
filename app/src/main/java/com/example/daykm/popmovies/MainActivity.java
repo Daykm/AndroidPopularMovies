@@ -1,16 +1,17 @@
 package com.example.daykm.popmovies;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String SERVICE = "B";
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +29,14 @@ public class MainActivity extends AppCompatActivity {
             ft.commit();
         }
 
+        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                Log.i(TAG, Integer.toString(getSupportFragmentManager().getBackStackEntryCount()));
+            }
+        });
 
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         // Handle rotation changes
 
@@ -41,16 +44,19 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fm = getSupportFragmentManager();
 
-        Fragment fragment = fm.findFragmentByTag(MovieDetailsFragment.TAG);
+        MovieDetailsFragment fragment = (MovieDetailsFragment) fm.findFragmentByTag(MovieDetailsFragment.TAG);
         if(fragment != null) {
             if(isSinglePane) {
-                fm.beginTransaction().remove(fragment).commit();
-                fm.executePendingTransactions();
-                fm.beginTransaction()
-                        .add(R.id.posterContainer, fragment, MovieDetailsFragment.TAG)
-                        .hide(fm.findFragmentByTag(PosterListFragment.TAG))
-                        .addToBackStack(PosterListFragment.FRAGMENT_TRANSACTION_TAG)
-                        .commit();
+                if(fm.getBackStackEntryCount() < 1) {
+                    // deduce that the app is changing between two pane and one pane, move fragment
+                    fm.beginTransaction().remove(fragment).commit();
+                    fm.executePendingTransactions();
+                    fm.beginTransaction()
+                            .add(R.id.posterContainer, fragment, MovieDetailsFragment.TAG)
+                            .hide(fm.findFragmentByTag(PosterListFragment.TAG))
+                            .addToBackStack(PosterListFragment.FRAGMENT_TRANSACTION_TAG)
+                            .commit();
+                }
             } else {
                 fm.popBackStack(PosterListFragment.FRAGMENT_TRANSACTION_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 fm.executePendingTransactions();
@@ -59,6 +65,11 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override

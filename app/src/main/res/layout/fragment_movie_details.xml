@@ -92,5 +92,33 @@
             android:padding="15dp"
             tools:text="@string/testOverview" />
 
+        <TextView
+            android:id="@+id/trailerLabel"
+            android:layout_below="@id/movieOverview"
+            android:text="@string/trailers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_below="@id/trailerLabel"
+            android:id="@+id/trailerListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_below="@id/trailerListView"
+            android:id="@+id/reviewsLabel"
+            android:text="@string/reviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_below="@id/reviewsLabel"
+            android:id="@+id/reviewListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </RelativeLayout>
 </ScrollView>

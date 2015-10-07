@@ -16,8 +16,7 @@ public class SortDialog extends DialogFragment {
         return dialog;
     }
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    @Override public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.sort_movies)
                 .setItems(R.array.sort_options, new DialogInterface.OnClickListener() {
