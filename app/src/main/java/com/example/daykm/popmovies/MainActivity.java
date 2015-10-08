@@ -1,16 +1,19 @@
 package com.example.daykm.popmovies;
 
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.daykm.popmovies.greendao.FavoriteMovieDao;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String SERVICE = "B";
+    public static final String DATABASE = "D";
     public static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -25,18 +28,14 @@ public class MainActivity extends AppCompatActivity {
                 fragment.setRetainInstance(true);
                 ft.add(fragment, SERVICE);
             }
+            if( getSupportFragmentManager().findFragmentByTag(DATABASE) == null) {
+                DatabaseFragment fragment = new DatabaseFragment();
+                fragment.setRetainInstance(true);
+                ft.add(fragment, DATABASE);
+            }
             ft.add(R.id.posterContainer, PosterListFragment.newInstance(), PosterListFragment.TAG);
             ft.commit();
         }
-
-        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                Log.i(TAG, Integer.toString(getSupportFragmentManager().getBackStackEntryCount()));
-            }
-        });
-
-
 
         // Handle rotation changes
 
@@ -70,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+
     }
 
     @Override

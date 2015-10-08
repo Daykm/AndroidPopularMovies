@@ -32,12 +32,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         @Override
         public boolean areContentsTheSame(MovieListItem movie1, MovieListItem movie2) {
-            return movie1.getId().equals(movie2.getId());
+            return false;
         }
 
         @Override
         public boolean areItemsTheSame(MovieListItem movie1, MovieListItem movie2) {
-            return movie1.getId().equals(movie2.getId());
+            return false;
         }
     }
 
@@ -48,7 +48,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     protected class PosterViewHolder extends RecyclerView.ViewHolder {
-        int index;
         ImageView poster;
         public PosterViewHolder(View itemView, final PosterListFragment.PosterListener listener) {
             super(itemView);
@@ -57,7 +56,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             poster.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onPosterClicked(movies.get(index));
+                    listener.onPosterClicked(movies.get(getAdapterPosition()));
                 }
             });
 
@@ -89,7 +88,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 viewHolder.poster.setImageResource(R.drawable.no_poster);
             }
         });
-        viewHolder.index = i;
     }
 
     @Override

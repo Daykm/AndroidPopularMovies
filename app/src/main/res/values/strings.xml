@@ -4,7 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="label_runtime">min</string>
     <string name="favorite">Mark as Favorite</string>
@@ -16,6 +15,7 @@
     <string name="sort_popularity_desc">Sort by popularity descending</string>
     <string name="sort_rating_asc">Sort by rating ascending</string>
     <string name="sort_rating_desc">Sort by rating descending</string>
+    <string name="sort_favorite">Show favorites</string>
     <string name="trailers">Trailers:</string>
 
     <string name="youtubeUrlBase">https://www.youtube.com/watch?v=</string>
@@ -26,5 +26,6 @@
         <item name="popularity_asc">@string/sort_popularity_asc</item>
         <item name="rating_desc">@string/sort_rating_desc</item>
         <item name="rating_asc">@string/sort_rating_asc</item>
+        <item name="favorites">@string/sort_favorite</item>
     </array>
 </resources>

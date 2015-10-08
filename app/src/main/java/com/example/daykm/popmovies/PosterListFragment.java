@@ -15,9 +15,14 @@ import android.view.ViewGroup;
 
 import com.example.daykm.popmovies.beans.MovieListItem;
 import com.example.daykm.popmovies.domain.Configuration;
+import com.example.daykm.popmovies.domain.Movie;
 import com.example.daykm.popmovies.domain.MovieDiscovery;
 import com.example.daykm.popmovies.domain.MovieDiscoveryPage;
 import com.example.daykm.popmovies.domain.SortByCriteria;
+import com.example.daykm.popmovies.greendao.FavoriteMovie;
+import com.example.daykm.popmovies.greendao.FavoriteMovieDao;
+
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -44,6 +49,8 @@ public class PosterListFragment extends Fragment {
     boolean isSinglePane = false;
 
     private String sortingCriteria = SortByCriteria.POPULARITY_DESC;
+
+    private static final String FAV = "FAVORITES";
 
     public PosterListFragment() {
         // Required empty public constructor
@@ -101,10 +108,10 @@ public class PosterListFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.sort:
-                Log.i("Sort", "Clicked");
                 SortDialog.newInstance(new SortDialog.SortChangeCallback() {
                     @Override
                     public void onSortChange(int which) {
+                        boolean favorites = false;
                         switch(which) {
                             case 0:
                                 sortingCriteria = SortByCriteria.POPULARITY_DESC;
@@ -118,8 +125,15 @@ public class PosterListFragment extends Fragment {
                             case 3:
                                 sortingCriteria = SortByCriteria.VOTE_AVERAGE_ASC;
                                 break;
+                            case 4:
+                                sortingCriteria = FAV;
+                                favorites = true;
+                                onDisplayFavorites();
+                                break;
                         }
-                        service.getPopularMovies(new PopularMoviesCallback(), sortingCriteria);
+                        if(!favorites) {
+                            service.getPopularMovies(new PopularMoviesCallback(), sortingCriteria);
+                        }
                     }
                 }).show(getFragmentManager(), "Dialog");
                 return true;
@@ -144,7 +158,11 @@ public class PosterListFragment extends Fragment {
         public void onResponse(Response<Configuration> response) {
             baseUrl = response.body().getImages().getBaseUrl();
             posterSize = response.body().getImages().getPosterSizes().get(3);
-            service.getPopularMovies(new PopularMoviesCallback(), sortingCriteria);
+            if(sortingCriteria.equals(FAV)) {
+                onDisplayFavorites();
+            } else {
+                service.getPopularMovies(new PopularMoviesCallback(), sortingCriteria);
+            }
         }
 
         @Override
@@ -152,6 +170,19 @@ public class PosterListFragment extends Fragment {
 
         }
     }
+
+    public void onDisplayFavorites() {
+        movies.clear();
+        FavoriteMovieDao dao = ((DatabaseFragment) getFragmentManager().findFragmentByTag(MainActivity.DATABASE)).dao;
+        List<FavoriteMovie> list = dao.loadAll();
+        for(int i = 0; i < list.size(); i++) {
+            // TODO batch to avoid 20 concurrent call limit with async task executing http requests synchronously
+            FavoriteMovie fav = list.get(i);
+            service.getMovieDetails(fav.getMovieid(), new FavoriteMoviesCallback());
+        }
+    }
+
+
 
     private class PopularMoviesCallback implements Callback<MovieDiscoveryPage> {
 
@@ -167,7 +198,21 @@ public class PosterListFragment extends Fragment {
 
         @Override
         public void onFailure(Throwable t) {
-            // do not fail
+            Log.e(TAG, "failure");
+        }
+    }
+
+    private class FavoriteMoviesCallback implements Callback<Movie> {
+        @Override
+        public void onResponse(Response<Movie> response) {
+            Movie movie = response.body();
+            movies.add(new MovieListItem(movie.getId(), baseUrl + posterSize +  movie.getPosterPath(), movie.getPopularity(), movie.getVoteAverage()));
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+            Log.e(TAG, "failure");
         }
     }
 

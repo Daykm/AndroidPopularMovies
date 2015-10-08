@@ -1,6 +1,9 @@
 package com.example.daykm.popmovies;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteConstraintException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,8 +22,13 @@ import com.example.daykm.popmovies.domain.Review;
 import com.example.daykm.popmovies.domain.ReviewPage;
 import com.example.daykm.popmovies.domain.VideoResults;
 import com.example.daykm.popmovies.domain.VideoTypes;
+import com.example.daykm.popmovies.greendao.DaoSession;
+import com.example.daykm.popmovies.greendao.FavoriteMovie;
+import com.example.daykm.popmovies.greendao.FavoriteMovieDao;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -64,10 +72,6 @@ public class MovieDetailsFragment extends Fragment {
         return fragment;
     }
 
-    public static MovieDetailsFragment newInstance(MovieDetailsFragment oldFragment) {
-        return MovieDetailsFragment.newInstance(oldFragment.id, oldFragment.posterUrl);
-    }
-
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -101,15 +105,6 @@ public class MovieDetailsFragment extends Fragment {
         }
 
         return fragmentView;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override public void onStart() {
-        super.onStart();
     }
 
     private class MovieDetailsCallback implements Callback<Movie> {
@@ -169,9 +164,15 @@ public class MovieDetailsFragment extends Fragment {
         overview.setText(result.getOverview());
         popularity.setText(Float.toString(result.getPopularity()));
         favorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("Details", "TODO");
+            @Override public void onClick(View v) {
+                FavoriteMovieDao dao = ((DatabaseFragment) getFragmentManager().findFragmentByTag(MainActivity.DATABASE)).dao;
+                FavoriteMovie fav = new FavoriteMovie();
+                fav.setMovieid(movie.getId());
+                try {
+                    dao.insert(fav);
+                } catch (SQLiteConstraintException e) {
+                    Log.i(TAG, "Movie already favorited");
+                }
             }
         });
     }
